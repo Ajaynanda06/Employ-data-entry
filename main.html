@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Salary Data Entry</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        h1 {
+            margin-bottom: 20px;
+            color: #343a40;
+        }
+        form {
+            margin-bottom: 20px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #495057;
+        }
+        input[type="text"],
+        input[type="number"] {
+            width: calc(100% - 22px); /* Adjusted for padding and borders */
+            padding: 8px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+            color: #495057;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .update-btn, .delete-btn {
+            padding: 5px 10px;
+            margin-right: 5px;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .update-btn {
+            background-color: #28a745;
+            color: #fff;
+        }
+        .update-btn:hover {
+            background-color: #218838;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+            color: #fff;
+        }
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Employee Salary Data Entry</h1>
+    <form id="employeeForm">
+        <label for="employeeName">Name:</label>
+        <input type="text" id="employeeName" name="employeeName" required><br>
+
+        <label for="employeePosition">Position:</label>
+        <input type="text" id="employeePosition" name="employeePosition" required><br>
+
+        <label for="employeeSalary">Salary:</label>
+        <input type="number" id="employeeSalary" name="employeeSalary" required><br>
+
+        <button type="button" onclick="addEmployee()">Submit</button>
+        <button type="button" onclick="clearForm()">Clear</button>
+    </form>
+
+    <hr>
+
+    <h1>Employee Search</h1>
+    <input type="text" id="searchInput" placeholder="Enter name to search">
+    <button onclick="searchEmployee()">Search</button>
+
+    <table id="employeeTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Position</th>
+                <th>Salary</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="employeeData">
+            <!-- Employee data rows will be inserted here -->
+        </tbody>
+    </table>
+
+    <script>
+        var nextId = 1; // Unique ID for each row
+
+        function addEmployee() {
+            var name = document.getElementById("employeeName").value;
+            var position = document.getElementById("employeePosition").value;
+            var salary = document.getElementById("employeeSalary").value;
+
+            var table = document.getElementById("employeeData");
+            var newRow = table.insertRow(table.rows.length);
+            newRow.id = "row_" + nextId;
+
+            var cell1 = newRow.insertCell(0);
+            var cell2 = newRow.insertCell(1);
+            var cell3 = newRow.insertCell(2);
+            var cell4 = newRow.insertCell(3);
+
+            cell1.textContent = name;
+            cell2.textContent = position;
+            cell3.textContent = salary;
+
+            var updateButton = document.createElement("button");
+            updateButton.textContent = "Update";
+            updateButton.classList.add("update-btn");
+            updateButton.onclick = function() {
+                updateEmployee(newRow);
+            };
+            cell4.appendChild(updateButton);
+
+            var deleteButton = document.createElement("button");
+            deleteButton.textContent = "Delete";
+            deleteButton.classList.add("delete-btn");
+            deleteButton.onclick = function() {
+                deleteEmployee(newRow.id);
+            };
+            cell4.appendChild(deleteButton);
+
+            nextId++;
+
+            clearForm();
+        }
+
+        function clearForm() {
+            document.getElementById("employeeName").value = "";
+            document.getElementById("employeePosition").value = "";
+            document.getElementById("employeeSalary").value = "";
+        }
+
+        function updateEmployee(row) {
+            var name = prompt("Enter updated name:", row.cells[0].textContent);
+            var position = prompt("Enter updated position:", row.cells[1].textContent);
+            var salary = prompt("Enter updated salary:", row.cells[2].textContent);
+
+            if (name && position && salary) {
+                row.cells[0].textContent = name;
+                row.cells[1].textContent = position;
+                row.cells[2].textContent = salary;
+            }
+        }
+
+        function deleteEmployee(id) {
+            var row = document.getElementById(id);
+            if (row) {
+                row.parentNode.removeChild(row);
+            }
+        }
+
+        function searchEmployee() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("searchInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("employeeTable");
+            tr = table.getElementsByTagName("tr");
+            for (i = 1; i < tr.length; i++) { // start from index 1 to skip header row
+                td = tr[i].getElementsByTagName("td")[0];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
